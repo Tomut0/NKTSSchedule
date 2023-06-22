@@ -1,0 +1,59 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java'
+}
+
+group = 'ru.tomut0.nkts.schedule'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+configurations.implementation {
+    exclude group: 'com.vk.api', module: 'slf4j-api'
+    exclude group: 'org.asynchttpclient', module: 'slf4j-api'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
+    // exclude group: 'org.apache.logging.log4j', module: 'log4j-api'
+    // exclude group: 'org.asynchttpclient', module: 'slf4j-api'
+}
+
+dependencies {
+    implementation 'com.vk.api:sdk:1.0.14'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'org.slf4j:slf4j-simple:2.0.7'
+    implementation 'com.github.demidko:aot:2022.11.28'
+    implementation 'org.dhatim:fastexcel:0.15.4'
+    implementation 'org.dhatim:fastexcel-reader:0.15.4'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+jar {
+    manifest {
+        attributes 'Main-Class': "ru.tomut0.nkts.schedule.Main"
+    }
+}
+
+shadowJar {
+    relocate 'com.vk.api', 'ru.tomut0.libs.vk'
+    relocate 'com.github.demidko', 'ru.tomut0.libs.aot'
+    relocate 'org.dhatim.fastexcel', 'ru.tomut0.libs.fastexcel'
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('config.properties') {
+        expand props
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
