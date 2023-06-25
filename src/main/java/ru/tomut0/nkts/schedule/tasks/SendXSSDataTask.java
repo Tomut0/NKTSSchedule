@@ -9,12 +9,15 @@ import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
 import ru.tomut0.nkts.schedule.Main;
+import ru.tomut0.nkts.schedule.VkUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,10 +47,10 @@ public class SendXSSDataTask implements Runnable {
             List<Row> rows = sheet.get().read();
             Row groupsRow = rows.get(4);
 
-            StringBuilder message = new StringBuilder("\uD83D\uDCC5 Расписание на сегодня:\n");
+            String message = "\uD83D\uDCC5 Новое расписание:\n";
 
             for (Cell groups : groupsRow) {
-                if (!groups.getText().equals("КС 20-3")) {
+                if (!groups.getText().equals(Main.getConfiguration().getProperty("RECEIVER_NAME"))) {
                     continue;
                 }
 
@@ -75,26 +78,36 @@ public class SendXSSDataTask implements Runnable {
                         continue;
                     }
 
+                    for (String bannedWord : VkUtils.getBlackList()) {
+                        if (subject.contains(bannedWord)) {
+                            Main.getLogger().info("Found a banned word: " + bannedWord);
+                            return;
+                        }
+                    }
+
                     if (Main.fromClock.matcher(subject).matches()) {
-                        message.append("Занятия начинаются ").append(subject).append("!\n");
+                        message = message.concat("Занятия начинаются ").concat(subject).concat("!\n");
                         continue;
                     }
 
                     String joinedHours = String.join(" - ", hourCells.stream().filter(s -> !s.isBlank()).toList());
 
-                    message.append(joinedHours).append("\n");
+                    message = message.concat(joinedHours).concat("\n");
                 }
-
-                Main.getLogger().info("Sending a message...");
-                // Send message
-                Main.getVk().messages().send(Main.getGroupActor()).
-                        userId(184396723).
-                        randomId(0).
-                        attachment(String.format("wall%d_%d", latest.getOwnerId(), latest.getId())).
-                        message(message.toString()).
-                        execute();
             }
-        } catch (IOException | ApiException | ClientException e) {
+
+            Main.getLogger().info("Sending a message...");
+
+            // if nothing changed, do not send message.
+            if (message.equals("\uD83D\uDCC5 Новое расписание:\n")) {
+                Main.getLogger().info("Post is empty or it's a practice, returning!");
+                return;
+            }
+
+            // Send message
+            String attachment = String.format("wall%d_%d", latest.getOwnerId(), latest.getId());
+            VkUtils.sendToReceiver(attachment, message);
+        } catch (IOException e) {
             Main.getLogger().error(e.getMessage());
             throw new RuntimeException(e);
         }
