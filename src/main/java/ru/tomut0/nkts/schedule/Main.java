@@ -35,7 +35,6 @@ public class Main {
 
     private static ScheduledExecutorService scheduler;
     private static GroupActor groupActor;
-    private static VkHandler handler;
 
     public static Properties getConfiguration() {
         return configuration;
@@ -129,9 +128,5 @@ public class Main {
 
     public static GroupActor getGroupActor() {
         return groupActor;
-    }
-
-    public static VkHandler getHandler() {
-        return handler;
     }
 }
