@@ -47,9 +47,9 @@ public class ScheduleServer implements HttpHandler {
         }
 
         if (msg.contains("blacklistadd")) {
-            //String replace = msg.replace("blacklistadd ", "");
+            String replace = msg.replace("blacklistadd ", "");
             VkUtils.sendMessage(peer, "✅ Blacklist word has been added.");
-            //VkUtils.getBlackList().add(replace);
+            VkUtils.getBlackList().add(replace);
         }
     }
 
