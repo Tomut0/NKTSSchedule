@@ -77,7 +77,7 @@ async function run() {
 
     let similarity = findSimilarity(latestPost.text, "технического отделения");
     debug(`Similarity (${latestPost.text}) is ${similarity}`);
-    if (similarity > 0.55) {
+    if (similarity >= 0.55) {
         if (latestPost.attachments.length === 1 && latestPost.attachments[0].type === 'doc') {
             debug(`Post has an attachment, trying to process the document...`);
             const message = await XSSReader.processDocument(latestPost.attachments[0].doc.url);
@@ -106,7 +106,7 @@ function findSimilarity(first, second) {
 async function sendMessage(text, latestPost) {
     debug(`Sending a message to ${process.env.RECEIVER_ID}.`);
     await vkGroup.api.messages.send({
-        peer_id: process.env.OWNER_ID,
+        peer_id: process.env.RECEIVER_ID,
         message: text,
         random_id: Math.floor(Math.random() * 100000),
         attachment: `wall${latestPost.owner_id}_${latestPost.id}`

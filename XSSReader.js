@@ -1,7 +1,12 @@
 import * as XLSX from "xlsx/xlsx.js";
 import {debug} from "./index.js";
+import * as fs from "fs";
 
 const pattern = /с ..-../;
+
+// Needs if in one day there are 2 new schedules was released
+let shedulesInDay = 0;
+let today = new Date();
 
 export async function processDocument(url) {
     debug(`Reading a document from ${url}.`);
@@ -13,6 +18,8 @@ export async function processDocument(url) {
     const workbook = XLSX.read(buf);
 
     let message = "📅 Новое расписание:\n";
+
+    shedulesInDay += 1;
 
     // get first sheet
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -29,8 +36,14 @@ export async function processDocument(url) {
     const date = new Date();
     const dayOfWeek = date.getDay();
 
+    // Resets `schedulesInDay` when a new day comes
+    if (today != date) {
+        shedulesInDay = 0;
+        today = date;
+    }
+
     // Day height
-    const rowStart = 6 + (dayOfWeek - 1);
+    const rowStart = 7 * (dayOfWeek + shedulesInDay);
     const rowEnd = rowStart + 6;
 
     // Day width
@@ -43,7 +56,6 @@ export async function processDocument(url) {
 
     // get data from range
     const dayRange = XLSX.utils.sheet_to_json(worksheet, {range: range});
-    debug(`Day is ${dayRange}.`);
 
     for (const dayRow of dayRange) {
         if (Object.keys(dayRow).length > 1) {
