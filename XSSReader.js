@@ -6,7 +6,7 @@ const pattern = /с ..-../;
 
 // Needs if in one day there are 2 new schedules was released
 let shedulesInDay = 0;
-let today = new Date();
+let today = new Date().getDate();
 
 export async function processDocument(url) {
     debug(`Reading a document from ${url}.`);
@@ -37,9 +37,9 @@ export async function processDocument(url) {
     const dayOfWeek = date.getDay();
 
     // Resets `schedulesInDay` when a new day comes
-    if (today != date) {
+    if (today != date.getDate()) {
         shedulesInDay = 0;
-        today = date;
+        today = date.getDate();
     }
 
     // Day height
