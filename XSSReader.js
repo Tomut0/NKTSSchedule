@@ -13,7 +13,7 @@ export async function processDocument(url) {
     const buf = await ((await fetch(url)).arrayBuffer());
 
     // uncomment to debug
-    // const buf = fs.readFileSync('5_sentyabrya.xlsx');
+    // const buf = fs.readFileSync('7_sentyabrya.xlsx');
 
     const workbook = XLSX.read(buf);
 
@@ -42,8 +42,11 @@ export async function processDocument(url) {
         today = date.getDate();
     }
 
+    debug(`DayOfWeek: ${dayOfWeek}`);
+    debug(`SchedulesInDay: ${shedulesInDay}`);
+
     // Day height
-    const rowStart = 7 * (dayOfWeek + shedulesInDay);
+    const rowStart = 7 * (dayOfWeek + shedulesInDay) - 1;
     const rowEnd = rowStart + 6;
 
     // Day width
