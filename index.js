@@ -85,7 +85,7 @@ async function run() {
                 await sendMessage(message, latestPost);
             }
         } else {
-            await sendMessage(latestPost.text, latestPost);
+            await sendMessage("Новое сообщение для технического отделения: ", latestPost);
         }
     }
 }

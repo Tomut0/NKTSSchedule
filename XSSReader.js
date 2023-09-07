@@ -13,11 +13,11 @@ export async function processDocument(url) {
     const buf = await ((await fetch(url)).arrayBuffer());
 
     // uncomment to debug
-    // const buf = fs.readFileSync('7_sentyabrya.xlsx');
+    // const buf = fs.readFileSync('8_sentyabrya.xlsx');
 
     const workbook = XLSX.read(buf);
 
-    let message = "📅 Новое расписание:\n";
+    let message = "📅 Новое расписание:\n===================\n";
 
     shedulesInDay += 1;
 
@@ -38,7 +38,7 @@ export async function processDocument(url) {
 
     // Resets `schedulesInDay` when a new day comes
     if (today != date.getDate()) {
-        shedulesInDay = 0;
+        shedulesInDay = 1;
         today = date.getDate();
     }
 
@@ -46,7 +46,7 @@ export async function processDocument(url) {
     debug(`SchedulesInDay: ${shedulesInDay}`);
 
     // Day height
-    const rowStart = 7 * (dayOfWeek + shedulesInDay) - 1;
+    const rowStart = 7 * (dayOfWeek + shedulesInDay) - 2;
     const rowEnd = rowStart + 6;
 
     // Day width
@@ -61,14 +61,22 @@ export async function processDocument(url) {
     const dayRange = XLSX.utils.sheet_to_json(worksheet, {range: range});
 
     for (const dayRow of dayRange) {
-        if (Object.keys(dayRow).length > 1) {
-            const subject = Object.values(dayRow)[1];
+        let day = Object.values(dayRow).filter(value => typeof value === 'string').map(value => value.trim()).filter(value => value != "");
+        let cabinet = Object.values(dayRow).filter(value => typeof value === 'number').map(value => value += " каб.");
 
-            if (pattern.test(Object.values(dayRow)[1])) {
+        day = day.concat(cabinet);
+
+        if (day.length >= 2) {
+            day[0] = "⏳" + day[0];
+            const subject = day[1];
+
+            if (pattern.test(subject)) {
                 message += "Занятия начинаются " + subject;
             } else {
-                message += Object.values(dayRow).join(" - ") + "\n";
+                message += day.join("\n-- ") + "\n";
             }
+
+            message += "\n"
         }
     }
 
