@@ -4,11 +4,7 @@ import * as fs from "fs";
 
 const pattern = /с ..-../;
 
-// Needs if in one day there are 2 new schedules was released
-let shedulesInDay = 0;
-let today = new Date().getDate();
-
-export async function processDocument(url) {
+export async function processDocument(url, dayOfWeek) {
     debug(`Reading a document from ${url}.`);
     const buf = await ((await fetch(url)).arrayBuffer());
 
@@ -18,8 +14,6 @@ export async function processDocument(url) {
     const workbook = XLSX.read(buf);
 
     let message = "📅 Новое расписание:\n===================\n";
-
-    shedulesInDay += 1;
 
     // get first sheet
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -33,20 +27,8 @@ export async function processDocument(url) {
 
     debug(`Group column: ${groupColumn}.`);
 
-    const date = new Date();
-    const dayOfWeek = date.getDay();
-
-    // Resets `schedulesInDay` when a new day comes
-    if (today != date.getDate()) {
-        shedulesInDay = 1;
-        today = date.getDate();
-    }
-
-    debug(`DayOfWeek: ${dayOfWeek}`);
-    debug(`SchedulesInDay: ${shedulesInDay}`);
-
     // Day height
-    const rowStart = 7 * (dayOfWeek + shedulesInDay) - 2;
+    const rowStart = 7 * dayOfWeek - 2;
     const rowEnd = rowStart + 6;
 
     // Day width
