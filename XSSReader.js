@@ -29,7 +29,7 @@ export async function processDocument(url, dayOfWeek) {
 
     // Day height
     const rowStart = 7 * dayOfWeek - 2;
-    const rowEnd = rowStart + 6;
+    const rowEnd = rowStart + 7;
 
     // Day width
     const colStart = groupColumn - 1;
