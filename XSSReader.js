@@ -62,6 +62,11 @@ export async function processDocument(url, dayOfWeek) {
         }
     }
 
+    // a daily schedule was found, but no lessons here
+    if (message == "📅 Новое расписание:\n===================\n") {
+        message = null;
+    }
+
     return message;
 }
 
