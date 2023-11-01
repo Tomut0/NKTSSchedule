@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import * as XLSX from "xlsx/xlsx.js";
-import {debug} from "./index.js";
-import * as fs from "fs";
+import { debug } from './utils.js';
 
 const pattern = /с ..-../;
 
@@ -9,7 +9,7 @@ export async function processDocument(url, dayOfWeek) {
     const buf = await ((await fetch(url)).arrayBuffer());
 
     // uncomment to debug
-    // const buf = fs.readFileSync('8_sentyabrya.xlsx');
+    //const buf = fs.readFileSync('8_sentyabrya.xlsx');
 
     const workbook = XLSX.read(buf);
 
@@ -36,11 +36,11 @@ export async function processDocument(url, dayOfWeek) {
     const colEnd = groupColumn + 2;
 
     // get day range by width and height
-    const range = XLSX.utils.encode_range({s: {r: rowStart, c: colStart}, e: {r: rowEnd, c: colEnd}});
+    const range = XLSX.utils.encode_range({ s: { r: rowStart, c: colStart }, e: { r: rowEnd, c: colEnd } });
     debug(`Day range is ${range}.`);
 
     // get data from range
-    const dayRange = XLSX.utils.sheet_to_json(worksheet, {range: range});
+    const dayRange = XLSX.utils.sheet_to_json(worksheet, { range: range });
 
     for (const dayRow of dayRange) {
         let day = Object.values(dayRow).filter(value => typeof value === 'string').map(value => value.trim()).filter(value => value != "");
@@ -75,7 +75,7 @@ function getGroupColumn(worksheet) {
     const groupsCellRange = XLSX.utils.decode_range("D5:CF5");
 
     for (let colNum = groupsCellRange.s.c; colNum < groupsCellRange.e.c; colNum++) {
-        const cellAddress = XLSX.utils.encode_cell({r: 4, c: colNum});
+        const cellAddress = XLSX.utils.encode_cell({ r: 4, c: colNum });
         const groupCell = worksheet[cellAddress];
 
         // if cell equals groupName (ex.: КС-20-2)
