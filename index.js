@@ -6,7 +6,7 @@ import { run } from './findPostTask.js';
 export let enabled = true;
 
 const job = CronJob.from({
-    cronTime: '* 1 * * * *',
+    cronTime: '0 */1 * * * *',
     onTick: run,
     start: true,
     timeZone: 'Europe/Moscow'

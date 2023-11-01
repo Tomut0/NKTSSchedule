@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import * as fs from "fs";
-import { vkGroup } from "./bootstrap";
+import { vkGroup } from "./bootstrap.js";
 
 function debug(message) {
     const currentDate = new Date();
