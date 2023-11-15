@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { HearManager } from '@vk-io/hear';
 import { vkGroup } from './bootstrap.js';
 import { debug } from './utils.js';
-import { enabled } from './index.js';
+import { setEnabled } from './index.js';
 
 const hearManager = new HearManager();
 const messagePattern = /^!message (\d+) (.+)$/;
@@ -11,7 +11,7 @@ vkGroup.updates.on('message_new', hearManager.middleware);
 
 hearManager.hear("!scheduleoff", async (context) => {
     if (context.senderId === parseInt(process.env.OWNER_ID)) {
-        enabled = false;
+        setEnabled(false);
         debug("Disabled!");
         await context.send("✅ Schedule turned off.");
     }

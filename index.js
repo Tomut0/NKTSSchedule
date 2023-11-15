@@ -11,3 +11,7 @@ const job = CronJob.from({
     start: true,
     timeZone: 'Europe/Moscow'
 });
+
+export function setEnabled(enabled) {
+    this.enabled = enabled;
+}
