@@ -13,7 +13,7 @@ hearManager.hear("!scheduleoff", async (context) => {
     if (context.senderId === parseInt(process.env.OWNER_ID)) {
         setEnabled(false);
         debug("Disabled!");
-        await context.send("✅ Schedule turned off.");
+        await context.send("✅ Schedule has been turned off.");
     }
 });
 
