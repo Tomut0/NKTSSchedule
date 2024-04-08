@@ -1,15 +1,17 @@
 import 'dotenv/config';
 import * as XLSX from "xlsx/xlsx.js";
 import { debug } from './utils.js';
+import * as fs from "node:fs";
 
 const pattern = /с ..-../;
 
 export async function processDocument(url, dayOfWeek) {
     debug(`Reading a document from ${url}.`);
-    const buf = await ((await fetch(url)).arrayBuffer());
+    // comment to debug
+    // const buf = await ((await fetch(url)).arrayBuffer());
 
     // uncomment to debug
-    //const buf = fs.readFileSync('8_sentyabrya.xlsx');
+    const buf = fs.readFileSync('8_sentyabrya.xlsx');
 
     const workbook = XLSX.read(buf);
 
@@ -63,7 +65,7 @@ export async function processDocument(url, dayOfWeek) {
     }
 
     // a daily schedule was found, but no lessons here
-    if (message == "📅 Новое расписание:\n===================\n") {
+    if (message === "📅 Новое расписание:\n===================\n") {
         message = null;
     }
 
